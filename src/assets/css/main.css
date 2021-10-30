@@ -1,0 +1,36 @@
+.header{
+  z-index: 2;
+  height: 60px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+}
+.content{
+  padding-top: 60px;
+}
+table{
+  width: 100%;
+}
+th{
+  cursor: pointer;
+}
+.sort-value{
+  position: relative;
+  padding-right: 10px;
+}
+.sort-marker{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.currency-button.active{
+  background: gray;
+}
+.modal-content{
+  padding: 30px;
+}
+a{
+
+}
