@@ -10,7 +10,6 @@ const fetchData = async function() {
 			companies
 		}
 	}catch(e){
-		console.log(e)
 		return e
 	}
 }

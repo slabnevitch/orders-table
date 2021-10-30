@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header pt-4 shadow-lg">
+    <header class="header pt-4 shadow-lg">
       <div class="container mx-auto px-4">
         <div class="flex flex-row justify-between">
           <div>
@@ -23,44 +23,44 @@
 
        </div>
      </div>
-   </div>  <!--   .header     -->
-   <main class="content container mx-auto px-4">
-   
-    <table class="table-auto">
-      <thead>
-        <tr>
-          <th v-for="th in header" 
-          :key="th.title" 
-          @click="headerClick(th)" 
-          :class="{'bg-gray-400': th==activeTh,'text-white': th==activeTh }"
-          class="px-4 py-2 text-emerald-600"
-          tilte="sort the table by the given column"><span class="sort-value">{{th.title}}<span class="sort-marker" v-show="th==activeTh">&#8595;</span></span></th>
-        </tr>
-      </thead>
-      <tbody>
-        <order v-for="(order, i) in searchedOrders" 
-        :key="order.id"
-        :class="{'bg-gray-300': i%2 == 0}"
-        :order="order"
-        :exchange="exchange"
-        :baseCurrency="baseCurrency"></order>
-        
-        <tr v-if="!searchedOrders.length">
-        <td class="border border-emerald-500 px-4 py-2 text-emerald-600 font-medium" colspan="7">Nothing found</td>
-      </tr>
-    </tbody>
-  </table>
-  <stats :searchedOrders="searchedOrders.length"
-    :ordersTotal="ordersTotal"
-    :averageCheck="averageCheck"
-    :averageCheckFemale="averageCheckFemale"
-    :averageCheckMale="averageCheckMale"
-    :baseCurrency="baseCurrency"
-    :exchange="exchange"></stats>
-</main>
-<div class="cover" v-if="dataLoading"></div>
-<Preloader v-if="dataLoading"></Preloader>
-</div>
+      </header>  <!--   .header     -->
+     <main class="content container mx-auto px-4">
+
+      <table class="table-auto mb-8" id="orders-table">
+        <thead>
+          <tr>
+            <th v-for="th in header" 
+            :key="th.title" 
+            @click="headerClick(th)" 
+            :class="{'bg-gray-400': th==activeTh,'text-white': th==activeTh }"
+            class="px-4 py-2 text-emerald-600"
+            tilte="sort the table by the given column"><span class="sort-value">{{th.title}}<span class="sort-marker" v-show="th==activeTh">&#8595;</span></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <order v-for="(order, i) in searchedOrders" 
+          :key="order.id"
+          :class="{'bg-gray-300': i%2 == 0}"
+          :order="order"
+          :exchange="exchange"
+          :baseCurrency="baseCurrency"></order>
+          
+          <tr v-if="!searchedOrders.length">
+            <td class="border border-emerald-500 px-4 py-2 text-emerald-600 font-medium bg-red-100" colspan="7">Nothing found</td>
+          </tr>
+        </tbody>
+      </table>
+      <stats :searchedOrders="searchedOrders.length"
+      :ordersTotal="ordersTotal"
+      :averageCheck="averageCheck"
+      :averageCheckFemale="averageCheckFemale"
+      :averageCheckMale="averageCheckMale"
+      :baseCurrency="baseCurrency"
+      :exchange="exchange"></stats>
+    </main>
+    <div class="cover" v-if="dataLoading"></div>
+    <Preloader v-if="dataLoading"></Preloader>
+  </div>
 </template>
 
 <script>
@@ -152,10 +152,7 @@
               sector: "n/a"
             }
           }
-
-
         });
-
       },
       concatedOrders(){
         return this.orders.map(order => {
@@ -221,8 +218,7 @@
      },
      ordersTotal(){
       return this.searchedOrders.reduce((sum, current) => {
-        // console.log((sum + (+current.total)).toFixed(2))
-        return sum + (+current.total);
+           return sum + (+current.total);
       }, 0);
     },
     averageCheck(){
@@ -263,31 +259,29 @@
       this.baseCurrency = item;
     },
     exchangeInstall(rates){
-      console.log(rates);
       this.exchange.EUR = 1/rates.USD;
       this.exchange.RUB = (1/rates.USD) / (1/rates.RUB);
       this.exchange.CNY = (1/rates.USD) / (1/rates.CNY);
     }
   },
-async created(){
- this.dataLoading = true;
+  async created(){
+   this.dataLoading = true;
 
- const dataFromServer = await fetchData();
- 
- if(Object.keys(dataFromServer).length > 0){
-   this.users = dataFromServer.users;
-   this.orders = dataFromServer.orders;
-   this.companies = dataFromServer.companies;
+   const dataFromServer = await fetchData();
+   
+   if(Object.keys(dataFromServer).length > 0){
+     this.users = dataFromServer.users;
+     this.orders = dataFromServer.orders;
+     this.companies = dataFromServer.companies;
 
- }
+   }
 
- const currencyFromServer = await fetchCurrency();
- console.log(currencyFromServer);
- if(currencyFromServer.success){
-    this.exchangeInstall(currencyFromServer.rates);
- }
-   this.dataLoading = false;
- 
+   const currencyFromServer = await fetchCurrency();
+   if(currencyFromServer.success){
+      this.exchangeInstall(currencyFromServer.rates);
+   }
+    this.dataLoading = false;
+   
  }
 }
 </script>

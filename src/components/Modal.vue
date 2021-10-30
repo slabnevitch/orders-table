@@ -1,5 +1,11 @@
 <template>
-	<div class="modal-content bg-gray-100">
+	<div name="user" class="modal-content bg-gray-100">
+		<div slot="top-right" class="text-right">
+	      <button @click="$emit('close')">
+	        ❌
+	      </button>
+	    </div>
+
 		<div class="modal-avatar mb-2">
 			<img :src="order.avatar"/>
 		</div>

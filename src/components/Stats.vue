@@ -4,6 +4,11 @@
 			<tr>
 				<th class="px-4 py-2 text-emerald-600 text-center" colspan="2">Statistic</th>
 			</tr>
+			<tr>
+				<th class="px-4 text-emerald-600 text-center" colspan="2">
+					<a href="#orders-table" class="text-blue-600 underline font-normal" title="Go to table statistic">Go to table top</a>
+				</th>
+			</tr>
 		</thead>
 		<tbody>
 			<tr class="bg-gray-300">
