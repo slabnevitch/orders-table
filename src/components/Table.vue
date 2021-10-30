@@ -6,11 +6,12 @@
           <div>
             <span>Cyrrency select: </span>
             <button class="currency-button ml-1 mr-1 w-16 py-1 rounded-md font-semibold text-white ring-2"
-            v-for="item in Object.keys(fetchedCurrency.rates)"
+            v-for="item in Object.keys(availableCurrencies)"
             :key="item"
             :class="{'bg-gray-0': item !== baseCurrency, 'bg-gray-500': item === baseCurrency, 'ring-gray-300': item !== baseCurrency, 'ring-gray-500': item === baseCurrency, 'text-gray-500': item !== baseCurrency,}"
             @click="currencySelect(item)"
             title="select the desired currency">{{item}}</button>
+            
           </div>
           
           <div class="search">
@@ -24,6 +25,7 @@
      </div>
    </div>  <!--   .header     -->
    <main class="content container mx-auto px-4">
+   
     <table class="table-auto">
       <thead>
         <tr>
@@ -56,12 +58,16 @@
     :baseCurrency="baseCurrency"
     :exchange="exchange"></stats>
 </main>
+<div class="cover" v-if="dataLoading"></div>
+<Preloader v-if="dataLoading"></Preloader>
 </div>
 </template>
 
 <script>
   import Order from '@/components/Order.vue'
   import Stats from '@/components/Stats.vue'
+  import Preloader from '@/components/Preloader.vue'
+  import {fetchData, fetchCurrency} from '@/functions/fetch.data.js'
 
   export default {
     name: 'Table',
@@ -110,27 +116,26 @@
         activeTh: null,
         sortParameter: null,
         search: '',
-        fetchedCurrency: {
-          "success": true,
-          "timestamp": 1635431523,
-          "base": "EUR",
-          "date": "2021-10-28",
-          "rates": {
-            "USD": 1.167372,
-            "EUR": 1,
-            "RUB": 81.945423,
-            "CNY": 7.464059
-          }
-        },
+        // fetchedCurrency: {},
         baseCurrency: "USD",
-        exchange: {}
+        exchange: {
+          USD: 1,
+          EUR: null,
+          RUB: null,
+          CNY: null
+        },
+        dataLoading: false
       }
     },
     components: {
       order: Order,
-      stats: Stats
+      stats: Stats,
+      Preloader
     },
     computed: {
+      availableCurrencies(){
+        return Object.fromEntries(Object.entries(this.exchange).filter(([key, value]) => value !== null));
+      },
       modifiedUsers() {
         return this.users.map(user => {
           if(user.company_id !== null){
@@ -256,28 +261,48 @@
     },
     currencySelect(item){
       this.baseCurrency = item;
-
+    },
+    exchangeInstall(rates){
+      console.log(rates);
+      this.exchange.EUR = 1/rates.USD;
+      this.exchange.RUB = (1/rates.USD) / (1/rates.RUB);
+      this.exchange.CNY = (1/rates.USD) / (1/rates.CNY);
     }
   },
 async created(){
- const users = await fetch('https://raw.githubusercontent.com/wgnet/wg_forge_frontend/master/data/users.json').then(resp => resp.json());
- const orders = await fetch('https://raw.githubusercontent.com/wgnet/wg_forge_frontend/master/data/orders.json').then(resp => resp.json());
+ this.dataLoading = true;
 
- const companies = await fetch('https://raw.githubusercontent.com/wgnet/wg_forge_frontend/master/data/companies.json').then(resp => resp.json());
- this.users = users;
- this.orders = orders;
- this.companies = companies;
+ const dataFromServer = await fetchData();
+ 
+ if(Object.keys(dataFromServer).length > 0){
+   this.users = dataFromServer.users;
+   this.orders = dataFromServer.orders;
+   this.companies = dataFromServer.companies;
 
- this.exchange.USD = 1;
- this.exchange.EUR = 1/this.fetchedCurrency.rates.USD;
- this.exchange.RUB = (1/this.fetchedCurrency.rates.USD) / (1/this.fetchedCurrency.rates.RUB);
- this.exchange.CNY = (1/this.fetchedCurrency.rates.USD) / (1/this.fetchedCurrency.rates.CNY);
-}
+ }
+
+ const currencyFromServer = await fetchCurrency();
+ console.log(currencyFromServer);
+ if(currencyFromServer.success){
+    this.exchangeInstall(currencyFromServer.rates);
+ }
+   this.dataLoading = false;
+ 
+ }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.cover{
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+   background-color: rgba(0,0,0, .5);
+   z-index: 5;
+}
 /*h3 {
   margin: 40px 0 0;
 }
