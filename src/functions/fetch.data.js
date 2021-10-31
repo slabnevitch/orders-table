@@ -16,7 +16,7 @@ const fetchData = async function() {
 const fetchCurrency = async function() {
 	try{
 		// const res = await fetch(`http://data.fixer.io/api/latest?access_key=49656929fa6f6834e9007f4334997cd3&base=USD&symbols=GBP,EUR,RUB`);
-		const res = await fetch(`http://data.fixer.io/api/latest?access_key=49656929fa6f6834e9007f4334997cd3&symbols=USD,RUB,CNY`);
+		const res = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
       	return await res.json();
 	
 	}catch(e){

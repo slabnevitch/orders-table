@@ -277,7 +277,8 @@
    }
 
    const currencyFromServer = await fetchCurrency();
-   if(currencyFromServer.success){
+
+   if(Object.keys(currencyFromServer).length > 0){
       this.exchangeInstall(currencyFromServer.rates);
    }
     this.dataLoading = false;
